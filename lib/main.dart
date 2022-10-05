@@ -45,7 +45,39 @@ class MyHomePage extends StatelessWidget {
             Column(
               children: transactions.map((e) {
                 return Card(
-                  child: Text(e.title),
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 2, color: Colors.purple),
+                        ),
+                        child: Text(
+                          "\$${e.value.toStringAsFixed(2)}",
+                          style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            e.title,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "${e.date}",
+                            style: const TextStyle(color: Colors.grey),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 );
               }).toList(),
             ),
