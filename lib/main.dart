@@ -19,7 +19,8 @@ class MyHomePage extends StatelessWidget {
 
   final transactions = [
     Transaction(id: "t1", title: "Tenis", value: 500, date: DateTime.now()),
-    Transaction(id: "t2", title: "Conta de luz", value: 211, date: DateTime.now()),
+    Transaction(
+        id: "t2", title: "Conta de luz", value: 211, date: DateTime.now()),
   ];
 
   @override
@@ -35,14 +36,18 @@ class MyHomePage extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              child: Card(
+              child: const Card(
                 color: Colors.blue,
                 child: const Text("Gráfico"),
                 elevation: 5,
               ),
             ),
-            Card(
-              child: Text("Lista de transações"),
+            Column(
+              children: transactions.map((e) {
+                return Card(
+                  child: Text(e.title),
+                );
+              }).toList(),
             ),
           ],
         ),
