@@ -26,9 +26,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Despesas Pessoais"),
-      ),
+      appBar: AppBar(title: const Text("Despesas Pessoais")),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -38,8 +36,8 @@ class MyHomePage extends StatelessWidget {
               width: double.infinity,
               child: const Card(
                 color: Colors.blue,
-                child: const Text("Gráfico"),
                 elevation: 5,
+                child: Text("Gráfico"),
               ),
             ),
             Column(
