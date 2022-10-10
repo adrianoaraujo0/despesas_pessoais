@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 
-class TransactionForm extends StatelessWidget {
-  final TextEditingController valueController = TextEditingController();
-  final TextEditingController titleController = TextEditingController();
+class TransactionForm extends StatefulWidget {
+  TransactionForm({required this.onSubmitted, super.key});
 
   void Function(String, double) onSubmitted;
 
-  TransactionForm({required this.onSubmitted, super.key});
+  @override
+  State<TransactionForm> createState() => _TransactionFormState();
+}
+
+class _TransactionFormState extends State<TransactionForm> {
+  final TextEditingController valueController = TextEditingController();
+
+  final TextEditingController titleController = TextEditingController();
+
+  submitForm(){
+    if(valueController.text.isEmpty || titleController.text.isEmpty){
+      return;
+      }
+
+    widget.onSubmitted(titleController.text, double.parse(valueController.text));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,20 +29,20 @@ class TransactionForm extends StatelessWidget {
         children: [
           TextField(
             controller: titleController,
-            decoration: InputDecoration(labelText: "Título"),
+            decoration: const InputDecoration(labelText: "Título"),
+            onSubmitted: (_) => submitForm(),
           ),
           TextField(
             controller: valueController,
-            decoration: InputDecoration(labelText: "Valor(R\$)"),
+            decoration: const InputDecoration(labelText: "Valor(R\$)"),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onSubmitted: (_) => submitForm(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                  onPressed: () {
-                    onSubmitted(titleController.text,
-                        double.parse(valueController.text));
-                  },
+                  onPressed: submitForm,
                   child: const Text(
                     "Nova transação",
                     style: TextStyle(color: Colors.purple),
