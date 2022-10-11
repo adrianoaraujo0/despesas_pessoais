@@ -19,14 +19,14 @@ class ExpensesApp extends StatelessWidget {
           secondary: Colors.amber,
         ),
         textTheme: tema.textTheme.copyWith(
-          headline6: TextStyle(
+          headline6: const TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 20,
@@ -44,19 +44,19 @@ class MyHomePage extends StatefulWidget {
 }
  
 class _MyHomePageState extends State<MyHomePage> {
-  final transactions = [
-    Transaction(
-      id: 't1',
-      title: 'Novo Tênis de Corrida',
-      value: 310.76,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Conta de Luz',
-      value: 211.30,
-      date: DateTime.now(),
-    ),
+  List<Transaction> transactions = [
+    // Transaction(
+    //   id: 't1',
+    //   title: 'Novo Tênis de Corrida',
+    //   value: 310.76,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't2',
+    //   title: 'Conta de Luz',
+    //   value: 211.30,
+    //   date: DateTime.now(),
+    // ),
   ];
  
   addTransaction(String title, double value) {
@@ -87,10 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Despesas Pessoais'),
+        title: const Text('Despesas Pessoais'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _openTransactionFormModal(context),
           ),
         ],
@@ -101,18 +101,18 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Container(
               width: double.infinity,
-              child: Card(
+              child: const Card(
                 color: Colors.blue,
-                child: Text('Gráfico'),
                 elevation: 5,
+                child: Text('Gráfico'),
               ),
             ),
-            TransactionList(transactions: transactions,),
+            TransactionList(transactions: transactions),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () => _openTransactionFormModal(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
