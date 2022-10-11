@@ -114,8 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: double.infinity,
             ),
-            // Chart(recentTransaction: recentTransactions),
-            ChartBar(),
+            Chart(recentTransaction: recentTransactions),
             TransactionList(transactions: transactions),
           ],
         ),
