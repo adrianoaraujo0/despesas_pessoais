@@ -15,24 +15,18 @@ class TransactionForm extends StatelessWidget {
         children: [
           TextField(
             controller: titleController,
-            decoration: InputDecoration(labelText: "Título"),
+            decoration: const InputDecoration(labelText: "Título"),
           ),
           TextField(
             controller: valueController,
-            decoration: InputDecoration(labelText: "Valor(R\$)"),
+            decoration: const InputDecoration(labelText: "Valor(R\$)"),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                  onPressed: () {
-                    onSubmitted(titleController.text,
-                        double.parse(valueController.text));
-                  },
-                  child: const Text(
-                    "Nova transação",
-                    style: TextStyle(color: Colors.purple),
-                  )),
+                  onPressed: () {onSubmitted(titleController.text, double.parse(valueController.text));},
+                  child: const Text("Nova transação", style: TextStyle(color: Colors.purple),)),
             ],
           )
         ],
