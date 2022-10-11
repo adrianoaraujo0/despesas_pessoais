@@ -1,4 +1,5 @@
 import 'package:despesas_pessoais/components/chart.dart';
+import 'package:despesas_pessoais/components/chart_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
@@ -50,13 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
       id: 't0',
       title: 'Novo Tênis de Corrida',
       value: 310.76,
-      date: DateTime.now().subtract(Duration(days: 3)),
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
     Transaction(
       id: 't1',
       title: 'Conta de Luz',
       value: 211.30,
-      date: DateTime.now().subtract(Duration(days: 1)),
+      date: DateTime.now().subtract(const Duration(days: 1)),
     ),
   ];
 
@@ -64,13 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return transactions.where(
       (element){
         return element.date.isAfter(DateTime.now().subtract(
-        Duration(days: 7)
+        const Duration(days: 7)
       ));
      }
     ).toList();
   }
  
-  addTransaction(String title, double value) {
+  void addTransaction(String title, double value) {
     final newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: title,
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
  
-  _openTransactionFormModal(BuildContext context) {
+  void openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -102,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _openTransactionFormModal(context),
+            onPressed: () => openTransactionFormModal(context),
           ),
         ],
       ),
@@ -113,14 +114,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: double.infinity,
             ),
-            Chart(recentTransaction: recentTransactions),
+            // Chart(recentTransaction: recentTransactions),
+            ChartBar(),
             TransactionList(transactions: transactions),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => _openTransactionFormModal(context),
+        onPressed: () => openTransactionFormModal(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
