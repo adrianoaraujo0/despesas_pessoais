@@ -33,33 +33,28 @@ class TransactionList extends StatelessWidget {
         itemBuilder: (context, index) {
           final transaction = transactions[index];
             return Card(
-            child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary)),
-                  child: Text("\$${transaction.value.toStringAsFixed(2)}",
-                  style: const TextStyle(fontSize: 20, color: Colors.purple,
-                  fontWeight: FontWeight.bold),
+              elevation: 5,
+              margin: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 5,
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: FittedBox(
+                      child: Text("R\$${transaction.value}")
+                    ),
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      transaction.title,
-                      style: Theme.of(context).textTheme.headline6),
-                    Text(
-                      DateFormat("d MMM y").format(transaction.date),
-                      style: const TextStyle(color: Colors.grey),
-                    )
-                  ],
+                title: Text(
+                  transaction.title, 
+                  style: Theme.of(context).textTheme.headline6
                 ),
-              ],
-            ),
-          );
+                subtitle: Text(DateFormat('d MMM y').format(transaction.date)),
+              ),
+            );
         },
       ),
     );
