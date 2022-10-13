@@ -1,5 +1,5 @@
 import 'package:despesas_pessoais/components/chart.dart';
-import 'package:despesas_pessoais/components/chart_bar.dart';
+import 'package:despesas_pessoais/ui/tela_despesas/tela_despesa_view.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
@@ -77,47 +77,42 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        return TransactionForm(onSubmitted: addTransaction,);
+        return TransactionForm(onSubmitted: addTransaction);
       },
     );
   }
 
   void removeTransaction(String id){
-    setState(() {
-      transactions.removeWhere((element) => element.id == id);
-    });
-    
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => SimpleDialog(
+        alignment: Alignment.center,
+        children: [
+          const Text("ATENÇÃO", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          const SizedBox(height: 10,),
+          const Text("Tem certeza que deseja apagar essa despesa?", textAlign: TextAlign.center),
+          const SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(onTap: () => Navigator.pop(context), child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("NÃO", textAlign: TextAlign.center,))),
+              const SizedBox(height: 10,),
+              InkWell(
+                onTap: () {
+                  setState(() {transactions.removeWhere((element) => element.id == id);});
+                  Navigator.pop(context);
+                }, 
+                child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("SIM", textAlign: TextAlign.center,))
+              )
+            ],
+          ),
+        ],
+      )
+    );
   }
  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Despesas Pessoais'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => openTransactionFormModal(context),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-            ),
-            Chart(recentTransaction: recentTransactions),
-            TransactionList(transactions: transactions, removeTransaction: removeTransaction,),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => openTransactionFormModal(context),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
+    return TelaDespesas();
   }
 }
