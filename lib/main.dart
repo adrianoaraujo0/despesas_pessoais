@@ -18,7 +18,7 @@ class ExpensesApp extends StatelessWidget {
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
           primary: Colors.purple,
-          secondary: Colors.amber,
+          secondary: Colors.black,
         ),
         textTheme: tema.textTheme.copyWith(
           headline6: const TextStyle(
@@ -46,20 +46,7 @@ class MyHomePage extends StatefulWidget {
 }
  
 class _MyHomePageState extends State<MyHomePage> {
-  List<Transaction> transactions = [
-    Transaction(
-      id: 't0',
-      title: 'Novo Tênis de Corrida',
-      value: 310.76,
-      date: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-    Transaction(
-      id: 't1',
-      title: 'Conta de Luz',
-      value: 211.30,
-      date: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-  ];
+  List<Transaction> transactions = [];
 
   List<Transaction> get recentTransactions{
     return transactions.where(
@@ -71,12 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ).toList();
   }
  
-  void addTransaction(String title, double value) {
+  void addTransaction(String title, double value, DateTime dateTime) {
     final newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: title,
       value: value,
-      date: DateTime.now(),
+      date: dateTime
     );
  
     setState(() {
@@ -93,6 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
         return TransactionForm(onSubmitted: addTransaction,);
       },
     );
+  }
+
+  void removeTransaction(String id){
+    setState(() {
+      transactions.removeWhere((element) => element.id == id);
+    });
+    
   }
  
   @override
@@ -115,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: double.infinity,
             ),
             Chart(recentTransaction: recentTransactions),
-            TransactionList(transactions: transactions),
+            TransactionList(transactions: transactions, removeTransaction: removeTransaction,),
           ],
         ),
       ),

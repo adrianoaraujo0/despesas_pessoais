@@ -32,14 +32,13 @@ class Chart extends StatelessWidget {
         'value': totalSum
       };
      }
-   );
+   ).reversed.toList();
   }
 
   double get weekTotalValue {
     
     return groupedTransactions.fold(0.0, (sum, tr) {
       return sum + tr['value'];
-
     });
 
   }
@@ -60,7 +59,7 @@ class Chart extends StatelessWidget {
                 child: ChartBar(
                   label: tr['day'],
                   value: tr['value'],
-                  percentage: tr['value'] / weekTotalValue),
+                  percentage: weekTotalValue == 0 ? 0 : tr['value'] / weekTotalValue),
               );
           })).toList(),
         ),
