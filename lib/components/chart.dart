@@ -1,5 +1,5 @@
 import 'package:despesas_pessoais/components/chart_bar.dart';
-import 'package:despesas_pessoais/models/transaction.dart';
+import 'package:despesas_pessoais/model/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -36,7 +36,6 @@ class Chart extends StatelessWidget {
   }
 
   double get weekTotalValue {
-    
     return groupedTransactions.fold(0.0, (sum, tr) {
       return sum + tr['value'];
     });

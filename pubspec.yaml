@@ -13,11 +13,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.2
   intl: ^0.17.0
-
-
+  rxdart: ^0.26.0
+  mask_text_input_formatter: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -27,5 +26,20 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets: 
+    - assets/images/waiting.png
+    
+fonts:
+  - family: OpenSans
+    fonts: 
+    - asset: assetsfonts/Schyler-Regular.ttf
+    - asset: assetsfonts/Schyler-Bold.ttf
+      weight: 700
+  - family: Quicksand
+    fonts: 
+    - asset: assetsfonts/Quicksand-Regular.ttf
+    - asset: assetsfonts/Quicksand-Bold.ttf
+      weight: 700
 
  

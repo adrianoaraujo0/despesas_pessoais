@@ -1,14 +1,20 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:rxdart/subjects.dart';
-import '../../models/transaction.dart';
+import '../../model/transaction.dart';
 
 class TelaDespesasController{
-  BehaviorSubject<bool> updateList = BehaviorSubject<bool>();
   final List<Transaction> transactions = [];
   DateTime selectedDate = DateTime.now();
 
-    void openTransactionFormModal(BuildContext context, Widget form) {
+  final TextEditingController valueController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+
+  final BehaviorSubject<List<Transaction>> updateTransactionsList = BehaviorSubject<List<Transaction>>();
+  final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
+  
+  void openTransactionFormModal(BuildContext context, Widget form) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -17,33 +23,77 @@ class TelaDespesasController{
     );
   }
 
-  void addTransaction(String title, double value, DateTime dateTime, BuildContext context) {
-     if(value == 0 || title.isEmpty ){return;}
+  void addTransaction(BuildContext context) {
+     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
-    final newTransaction = Transaction(
+    final Transaction newTransaction = Transaction(
       id: Random().nextDouble().toString(),
-      title: title,
-      value: value,
-      date: dateTime
+      title: titleController.text,
+      value: double.parse(valueController.text),
+      date: selectedDate
     );
- 
+    
     transactions.add(newTransaction);
 
+    updateTransactionsList.sink.add(transactions);
+
+    titleController.clear();
+    valueController.clear();
+    selectedDate = DateTime.now();
+    
     Navigator.of(context).pop();
   }
 
-  buildShowDatePicker(BuildContext context) async{
-    showDatePicker(
+
+  void buildShowDatePicker(BuildContext context) async{
+    
+    DateTime? time = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2019),
       lastDate: DateTime.now()
-    )
-    .then(((pickedDate){
-          if(pickedDate == null){return;}
-          print(pickedDate);
-        }
-      ));
+    );
+
+    if(time != null) selectedDate = time;
+    updateDateForm.sink.add(selectedDate);
+  }
+
+   void removeTransaction(String id, BuildContext context){
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => SimpleDialog(
+        alignment: Alignment.center,
+        children: [
+          const Text("ATENÇÃO", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10,),
+          const Text("Tem certeza que deseja apagar essa despesa?", textAlign: TextAlign.center),
+          const SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(onTap: () => Navigator.pop(context), child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("NÃO", textAlign: TextAlign.center,))),
+              const SizedBox(height: 10,),
+              InkWell(
+                onTap: () {
+                  transactions.removeWhere((element) => element.id == id);
+                  updateTransactionsList.sink.add(transactions);
+                  Navigator.pop(context);
+                }, 
+                child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("SIM", textAlign: TextAlign.center,))
+              )
+            ],
+          ),
+        ],
+      )
+    );
   }
   
+  MaskTextInputFormatter maskTextFieldValue(){
+    return MaskTextInputFormatter(
+      mask: '###.###,#',
+      filter: { "#": RegExp(r'[0-9]') },
+    );
+
+  }
+
 }
