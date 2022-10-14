@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:despesas_pessoais/model/transaction.dart';
 import 'package:despesas_pessoais/ui/tela_despesas/tela_despesas_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class TelaDespesas extends StatelessWidget {
@@ -43,7 +45,7 @@ class TelaDespesas extends StatelessWidget {
             controller: telaDespesasController.valueController,
             decoration: const InputDecoration(labelText: "Valor(R\$)"),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [telaDespesasController.maskTextFieldValue()],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly, RealInputFormatter(moeda: false)],
           ),
           SizedBox(
             height: 70,

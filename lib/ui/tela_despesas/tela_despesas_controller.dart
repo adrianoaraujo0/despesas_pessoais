@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:rxdart/subjects.dart';
 import '../../model/transaction.dart';
 
@@ -26,10 +25,12 @@ class TelaDespesasController{
   void addTransaction(BuildContext context) {
      if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
+    print(double.parse(valueController.text));
+
     final Transaction newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: titleController.text,
-      value: double.parse(valueController.text),
+      value: 0,
       date: selectedDate
     );
     
@@ -88,12 +89,7 @@ class TelaDespesasController{
     );
   }
   
-  MaskTextInputFormatter maskTextFieldValue(){
-    return MaskTextInputFormatter(
-      mask: '###.###,#',
-      filter: { "#": RegExp(r'[0-9]') },
-    );
+
 
   }
 
-}
