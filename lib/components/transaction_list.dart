@@ -1,10 +1,10 @@
 import 'package:despesas_pessoais/model/transaction.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-  Function(String) removeTransaction;
+  Function(double) removeTransaction;
   TransactionList({
     required this.removeTransaction ,
     required this.transactions,
@@ -12,7 +12,7 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: transactions.isEmpty ? 
       Column(children:[

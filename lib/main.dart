@@ -1,5 +1,6 @@
 import 'package:despesas_pessoais/components/chart.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/tela_despesa_view.dart';
+import 'package:despesas_pessoais/ui/tela_despesas/despesas_page.dart';
+import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
@@ -58,61 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ).toList();
   }
  
-  void addTransaction(String title, double value, DateTime dateTime) {
-    final newTransaction = Transaction(
-      id: Random().nextDouble().toString(),
-      title: title,
-      value: value,
-      date: dateTime
-    );
- 
-    setState(() {
-      transactions.add(newTransaction);
-    });
- 
-    Navigator.of(context).pop();
-  }
- 
-  void openTransactionFormModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return TransactionForm(onSubmitted: addTransaction);
-      },
-    );
-  }
 
-  void removeTransaction(String id){
-    showDialog(
-      context: context, 
-      builder: (BuildContext context) => SimpleDialog(
-        alignment: Alignment.center,
-        children: [
-          const Text("ATENÇÃO", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-          const SizedBox(height: 10,),
-          const Text("Tem certeza que deseja apagar essa despesa?", textAlign: TextAlign.center),
-          const SizedBox(height: 10,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              InkWell(onTap: () => Navigator.pop(context), child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("NÃO", textAlign: TextAlign.center,))),
-              const SizedBox(height: 10,),
-              InkWell(
-                onTap: () {
-                  setState(() {transactions.removeWhere((element) => element.id == id);});
-                  Navigator.pop(context);
-                }, 
-                child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("SIM", textAlign: TextAlign.center,))
-              )
-            ],
-          ),
-        ],
-      )
-    );
-  }
  
   @override
   Widget build(BuildContext context) {
-    return TelaDespesas();
+    return SafeArea(
+      child: DespesasPage()
+    );
   }
 }

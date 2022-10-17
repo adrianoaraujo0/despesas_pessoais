@@ -1,13 +1,15 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 import '../../model/transaction.dart';
 
-class TelaDespesasController{
+class DespesasController{
   final List<Transaction> transactions = [];
   DateTime selectedDate = DateTime.now();
 
-  final TextEditingController valueController = TextEditingController();
+  final MoneyMaskedTextController valueController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
   final TextEditingController titleController = TextEditingController();
 
   final BehaviorSubject<List<Transaction>> updateTransactionsList = BehaviorSubject<List<Transaction>>();
@@ -23,14 +25,14 @@ class TelaDespesasController{
   }
 
   void addTransaction(BuildContext context) {
-     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
+    if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
-    print(double.parse(valueController.text));
-
+    print(valueController.numberValue);
+    
     final Transaction newTransaction = Transaction(
-      id: Random().nextDouble().toString(),
+      id: Random().nextDouble(),
       title: titleController.text,
-      value: 0,
+      value: valueController.numberValue,
       date: selectedDate
     );
     
@@ -39,7 +41,7 @@ class TelaDespesasController{
     updateTransactionsList.sink.add(transactions);
 
     titleController.clear();
-    valueController.clear();
+    valueController.updateValue(0);
     selectedDate = DateTime.now();
     
     Navigator.of(context).pop();
@@ -59,7 +61,7 @@ class TelaDespesasController{
     updateDateForm.sink.add(selectedDate);
   }
 
-   void removeTransaction(String id, BuildContext context){
+   void removeTransaction(double id, BuildContext context){
     showDialog(
       context: context, 
       builder: (BuildContext context) => SimpleDialog(

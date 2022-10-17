@@ -1,22 +1,30 @@
 import 'dart:math';
-
-import 'package:brasil_fields/brasil_fields.dart';
 import 'package:despesas_pessoais/model/transaction.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/tela_despesas_controller.dart';
+import 'package:despesas_pessoais/ui/tela_despesas/despesas_controller.dart';
+import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-class TelaDespesas extends StatelessWidget {
-  TelaDespesas({super.key});
+class DespesasPage extends StatelessWidget {
+  DespesasPage({super.key});
 
-  final TelaDespesasController telaDespesasController = TelaDespesasController();
+  final DespesasController telaDespesasController = DespesasController();
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Despesas Pessoais')),
-      body: buildListTransactions(context),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
+        child: Column(
+          children: [
+            SizedBox(child: GraficoPage(), height: 200,),
+            buildListTransactions(context),
+             
+          ],
+        ),
+      ),
       floatingActionButton: adicionarDespesa(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
@@ -44,8 +52,7 @@ class TelaDespesas extends StatelessWidget {
           TextField(
             controller: telaDespesasController.valueController,
             decoration: const InputDecoration(labelText: "Valor(R\$)"),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly, RealInputFormatter(moeda: false)],
+            keyboardType: const TextInputType.numberWithOptions(),
           ),
           SizedBox(
             height: 70,
@@ -88,7 +95,6 @@ class TelaDespesas extends StatelessWidget {
           StreamBuilder<List<Transaction>>(
             stream: telaDespesasController.updateTransactionsList.stream,
             builder: (context, snapshot) {
-              
               // if(snapshot.data == null){
               //   return Center(child: CircularProgressIndicator());
               // }
@@ -119,7 +125,7 @@ class TelaDespesas extends StatelessWidget {
                             radius: 30,
                             child: Padding(
                               padding: const EdgeInsets.all(6),
-                              child: FittedBox(child: Text("R\$${snapshot.data![index].value}")),
+                              child: FittedBox(child: Text('${snapshot.data![index].value}')),
                             ),
                           ),
                           title: Text(snapshot.data![index].title, style: Theme.of(context).textTheme.headline6),
@@ -142,5 +148,7 @@ class TelaDespesas extends StatelessWidget {
       ),
     );
   }
+  
+
 
 }
