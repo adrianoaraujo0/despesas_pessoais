@@ -10,93 +10,58 @@ class GraficoPage extends StatelessWidget {
   GraficoPage({super.key});
 
   DespesasController despesasController = DespesasController();
-
+      DateTime dateTimeNow = DateTime.now();
   List<Transaction> teste = [
-    Transaction(id: 1, title: 'A', value: 10, date: DateTime.now()),
-    Transaction(id: 2, title: 'A', value: 20, date: DateTime.now()),
-    Transaction(id: 3, title: 'A', value: 3550, date: DateTime.now()),
-    Transaction(id: 4, title: 'A', value: 400, date: DateTime.now()),
-    Transaction(id: 5, title: 'A', value: 1000, date: DateTime.now()),
-    Transaction(id: 6, title: 'A', value: 990, date: DateTime.now()),
-    Transaction(id: 7, title: 'A', value: 70, date: DateTime.now()),
-    Transaction(id: 9, title: 'A', value: 240, date: DateTime.now()),
-    Transaction(id: 8, title: 'A', value: 2000, date: DateTime.now()),
-    Transaction(id: 10, title: 'A', value: 20, date: DateTime.now()),
-    Transaction(id: 11, title: 'A', value: 20, date: DateTime.now()),
+    Transaction(id: 1, title: 'A', value: 1000, date: DateTime.parse('2022-10-17')),
+    Transaction(id: 2, title: 'A', value: 2000, date: DateTime.parse('2022-10-17')),
+    Transaction(id: 3, title: 'A', value: 3550, date: DateTime.parse('2022-10-15')),
+    Transaction(id: 4, title: 'A', value: 1500, date: DateTime.parse('2022-10-14')),
+    Transaction(id: 5, title: 'A', value: 1000, date: DateTime.parse('2022-10-13')),
+    Transaction(id: 6, title: 'A', value: 990, date: DateTime.parse('2022-10-12')),
+    Transaction(id: 7, title: 'A', value: 0, date: DateTime.parse('2022-10-11')),
   ];
-
-   // LineChartData controla a aparência do gráfico 
-
 
     @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-            aspectRatio: 2,
-            child: BarChart(
-              BarChartData(
-                barGroups: chartGroup(),
-                borderData:  FlBorderData(
-                border: const Border(bottom: BorderSide(), left: BorderSide())),
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(sideTitles: _bottomTitles),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-              )
+    return Card(
+      elevation: 5,
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: BarChart(
+          BarChartData(
+            groupsSpace: 10,
+            barGroups: chartGroup(),
+            borderData:  FlBorderData(
+            border: const Border(bottom: BorderSide())),
+            gridData: FlGridData(show: false),
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(sideTitles: bottomTitles()),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
-          );
+          )
+        ),
+      ),
+    );
   }
 
   List<BarChartGroupData> chartGroup(){
-    return teste.map((e) => 
-      BarChartGroupData(x: e.id.toInt(),
-      barRods: [BarChartRodData(toY: e.value)] 
+     return [
+      BarChartGroupData(
+        x: dateTimeNow.day,
+        barRods: [BarChartRodData(toY: 2, width: 10)] 
       )
-    ).toList();   
+    ];  
+    
   }
-
-   SideTitles get _bottomTitles => SideTitles(
-    showTitles: true,
-    getTitlesWidget: (value, meta) {
-      String text = '';
-      switch (value.toInt()) {
-        case 0:
-          text = 'Jan';
-          break;
-        case 2:
-          text = 'Mar';
-          break;
-        case 4:
-          text = 'May';
-          break;
-        case 6:
-          text = 'Jul';
-          break;
-        case 8:
-          text = 'Sep';
-          break;
-        case 10:
-          text = 'Nov';
-          break;
-      }
-
-      return Text(text);
-    },
-  );
-//grafico de linhas
-  // @override
-  // Widget build(BuildContext context) {
-  //   return LineChart(
-  //     LineChartData(
-  //       lineBarsData: [
-  //         LineChartBarData(
-  //           spots: teste.map((element) => FlSpot(element.id, element.value)).toList(),
-  //         )
-  //       ]
-  //     ),
-  //     swapAnimationCurve: Curves.linear,
-  //   ) ;
-  // }
+ 
+  SideTitles bottomTitles () {
+    return SideTitles(
+      showTitles: true,
+      getTitlesWidget: (value, meta) {
+        return Text("${value.toStringAsFixed(0)}/${dateTimeNow.month}", style: const TextStyle(fontWeight: FontWeight.w700));
+      } 
+    );
+  }
 }

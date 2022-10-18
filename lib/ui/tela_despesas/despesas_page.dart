@@ -19,7 +19,9 @@ class DespesasPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
         child: Column(
           children: [
-            SizedBox(child: GraficoPage(), height: 200,),
+            SizedBox(
+              child: GraficoPage(), height: 200
+            ),
             buildListTransactions(context),
              
           ],
@@ -103,7 +105,7 @@ class DespesasPage extends StatelessWidget {
                 child: snapshot.data == null || snapshot.data!.isEmpty ? 
                 Column(children:[
                   const SizedBox(height: 20),
-                  Text("Nenhuma Transacao Cadastrada!", style: Theme.of(context).textTheme.headline6),
+                  Text("Nenhuma Despesa Cadastrada!", style: Theme.of(context).textTheme.headline6),
                   const SizedBox(height: 20),
                   SizedBox(
                     height: 200,
