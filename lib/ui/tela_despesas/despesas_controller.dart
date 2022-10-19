@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +15,8 @@ class DespesasController{
 
   final BehaviorSubject<List<Transaction>> updateTransactionsList = BehaviorSubject<List<Transaction>>();
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
+  final BehaviorSubject<bool> updateChart = BehaviorSubject<bool>();
+  double accumulate = 0 ;
   
   void openTransactionFormModal(BuildContext context, Widget form) {
     showModalBottomSheet(
@@ -27,8 +30,6 @@ class DespesasController{
   void addTransaction(BuildContext context) {
     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
-    print(valueController.numberValue);
-    
     final Transaction newTransaction = Transaction(
       id: Random().nextDouble(),
       title: titleController.text,
@@ -46,7 +47,6 @@ class DespesasController{
     
     Navigator.of(context).pop();
   }
-
 
   void buildShowDatePicker(BuildContext context) async{
     
@@ -80,6 +80,7 @@ class DespesasController{
                 onTap: () {
                   transactions.removeWhere((element) => element.id == id);
                   updateTransactionsList.sink.add(transactions);
+                  updateChart.sink.add(true);
                   Navigator.pop(context);
                 }, 
                 child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("SIM", textAlign: TextAlign.center,))
@@ -91,7 +92,57 @@ class DespesasController{
     );
   }
   
+  double accumulateDateValues(int day){
+    List<Transaction> dayTransactions = transactions.where((element) => element.date.day == day).toList();
 
-
+    if(dayTransactions.isNotEmpty){
+      accumulate = dayTransactions.map((transactions) =>  transactions.value).reduce((value, element) => value + element);
+      return accumulate;
+    }
+    return 0.0;
   }
+
+  SideTitles bottomTitles () {
+    return SideTitles(
+      showTitles: true,
+      getTitlesWidget: (value, meta) {
+        return Text("${value.toStringAsFixed(0)}/${selectedDate.month}", style: const TextStyle(fontWeight: FontWeight.w500));
+      } 
+    );
+  }
+
+  List<BarChartGroupData> chartGroup(){
+     return [
+      BarChartGroupData(
+        x: selectedDate.day - 6,
+        barRods: [BarChartRodData(toY:  accumulateDateValues(selectedDate.day - 6)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day - 5,
+        barRods: [BarChartRodData(toY:  accumulateDateValues(selectedDate.day - 5)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day - 4,
+        barRods: [BarChartRodData(toY:  accumulateDateValues(selectedDate.day - 4)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day - 3,
+        barRods: [BarChartRodData(toY:  accumulateDateValues(selectedDate.day - 3)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day - 2,
+        barRods: [BarChartRodData(toY: accumulateDateValues(selectedDate.day - 2)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day - 1,
+        barRods: [BarChartRodData(toY: accumulateDateValues(selectedDate.day - 1)/100, width: 10)] 
+      ),
+      BarChartGroupData(
+        x: selectedDate.day,
+        barRods: [BarChartRodData(toY: accumulateDateValues(selectedDate.day)/100, width: 10)] 
+      ),
+    ];  
+  }
+
+}
 

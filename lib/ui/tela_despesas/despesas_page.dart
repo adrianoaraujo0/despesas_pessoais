@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:despesas_pessoais/model/transaction.dart';
 import 'package:despesas_pessoais/ui/tela_despesas/despesas_controller.dart';
+import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_controller.dart';
 import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_page.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +12,7 @@ class DespesasPage extends StatelessWidget {
   DespesasPage({super.key});
 
   final DespesasController telaDespesasController = DespesasController();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,11 +21,8 @@ class DespesasPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
         child: Column(
           children: [
-            SizedBox(
-              child: GraficoPage(), height: 200
-            ),
+            barChart(),
             buildListTransactions(context),
-             
           ],
         ),
       ),
@@ -32,6 +31,40 @@ class DespesasPage extends StatelessWidget {
     );
   }
   
+  Widget barChart(){
+    return StreamBuilder<bool>(
+      stream: telaDespesasController.updateChart.stream,
+      builder: (context, snapshot) {
+        return SizedBox(
+          height: 200,
+          child:Card(
+            elevation: 5,
+            child: AspectRatio(
+              aspectRatio: 2,
+              child: BarChart(
+                BarChartData(
+                  minY: 0,
+                  maxY: 10,
+                  groupsSpace: 2,
+                  barGroups: telaDespesasController.chartGroup(),
+                  borderData:  FlBorderData(
+                  border: const Border(bottom: BorderSide())),
+                  gridData: FlGridData(show: false),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(sideTitles: telaDespesasController.bottomTitles()),
+                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                )
+              )
+            ),
+          ), 
+        );
+      } 
+    );
+ }
+
   Widget adicionarDespesa(BuildContext context) {
     return Container(     
       margin: const EdgeInsets.only(bottom: 20),
@@ -79,7 +112,10 @@ class DespesasPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ElevatedButton(
-                  onPressed: (){telaDespesasController.addTransaction(context);},
+                  onPressed: (){
+                    telaDespesasController.addTransaction(context);
+                    telaDespesasController.updateChart.sink.add(false);
+                  },
                   child: const Text("Nova transação", style: TextStyle(color: Colors.white))
               ),
             ],
@@ -97,9 +133,6 @@ class DespesasPage extends StatelessWidget {
           StreamBuilder<List<Transaction>>(
             stream: telaDespesasController.updateTransactionsList.stream,
             builder: (context, snapshot) {
-              // if(snapshot.data == null){
-              //   return Center(child: CircularProgressIndicator());
-              // }
               return SizedBox(
                 height: 300,
                 child: snapshot.data == null || snapshot.data!.isEmpty ? 
@@ -123,12 +156,9 @@ class DespesasPage extends StatelessWidget {
                         elevation: 5,
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                         child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            child: Padding(
-                              padding: const EdgeInsets.all(6),
-                              child: FittedBox(child: Text('${snapshot.data![index].value}')),
-                            ),
+                          leading: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: FittedBox(child: Text('${snapshot.data![index].value}')),
                           ),
                           title: Text(snapshot.data![index].title, style: Theme.of(context).textTheme.headline6),
                           subtitle: Text(DateFormat('d MMM y').format(snapshot.data![index].date)),

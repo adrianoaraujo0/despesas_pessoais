@@ -1,9 +1,10 @@
-import 'package:fl_chart/fl_chart.dart';
+
+import 'package:rxdart/subjects.dart';
+
 
 class GraficoController{
 
-  static SideTitles geTopBottomTitles() => SideTitles(
-    showTitles: true, 
-  ); 
+  static BehaviorSubject<bool> updateChart = BehaviorSubject<bool>();
+
 
 }
