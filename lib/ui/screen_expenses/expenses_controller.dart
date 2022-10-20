@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
@@ -17,6 +18,8 @@ class ExpensesController{
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
   final BehaviorSubject<bool> updateChart = BehaviorSubject<bool>();
   double accumulate = 0 ;
+
+  ExpensesHelper expensesHelper = ExpensesHelper();
   
   void openTransactionFormModal(BuildContext context, Widget form) {
     showModalBottomSheet(
@@ -30,16 +33,16 @@ class ExpensesController{
   void addTransaction(BuildContext context) {
     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
-    final Expenses newTransaction = Expenses(
+    final Expenses newExpense = Expenses(
       Random().nextInt(100),
       titleController.text,
       valueController.numberValue,
       selectedDate
     );
     
-    transactions.add(newTransaction);
-
+    transactions.add(newExpense);
     updateTransactionsList.sink.add(transactions);
+    expensesHelper.saveExpense(newExpense);
 
     titleController.clear();
     valueController.updateValue(0);
@@ -145,4 +148,3 @@ class ExpensesController{
   }
 
 }
-

@@ -20,7 +20,7 @@ class Expenses {
     Map<String, dynamic> map = {
       columns.titleColumn: title,
       columns.valueColumn: value,
-      columns.dateColumn: date
+      columns.dateColumn: date!.millisecondsSinceEpoch
     };
     if(id != null){
       map[columns.idColumn] = id;

@@ -1,5 +1,5 @@
 import 'package:despesas_pessoais/model/expenses.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/expenses_controller.dart';
+import 'package:despesas_pessoais/ui/screen_expenses/expenses_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

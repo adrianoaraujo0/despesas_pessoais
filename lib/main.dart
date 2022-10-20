@@ -2,11 +2,16 @@ import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/expenses_page.dart';
+import 'package:despesas_pessoais/ui/screen_expenses/expenses_page.dart';
 import 'package:flutter/material.dart';
 import 'model/expenses.dart';
  
-main() => runApp(ExpensesApp());
+main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await ExpensesHelper().db;
+  runApp(ExpensesApp());
+}
  
 class ExpensesApp extends StatelessWidget {
   @override
@@ -48,20 +53,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
-  ExpensesHelper expensesHelper = ExpensesHelper();
 
+    ExpensesHelper expensesHelper = ExpensesHelper();
   @override
   void initState() {
-    Expenses expenses = Expenses();
-    expenses.value = 500000;
-    expenses.title = "CARRO";
-
-    expensesHelper.saveExpense(expenses);
+    
     expensesHelper.getAllExpenses().then((value) => print(value));
+
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return ExpensesPage();
