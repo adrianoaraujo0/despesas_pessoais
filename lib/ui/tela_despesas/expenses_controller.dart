@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
-import '../../model/transaction.dart';
+import '../../model/expenses.dart';
 
-class DespesasController{
-  final List<Transaction> transactions = [];
+class ExpensesController{
+  final List<Expenses> transactions = [];
   DateTime selectedDate = DateTime.now();
 
   final MoneyMaskedTextController valueController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
   final TextEditingController titleController = TextEditingController();
 
-  final BehaviorSubject<List<Transaction>> updateTransactionsList = BehaviorSubject<List<Transaction>>();
+  final BehaviorSubject<List<Expenses>> updateTransactionsList = BehaviorSubject<List<Expenses>>();
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
   final BehaviorSubject<bool> updateChart = BehaviorSubject<bool>();
   double accumulate = 0 ;
@@ -30,11 +30,11 @@ class DespesasController{
   void addTransaction(BuildContext context) {
     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
-    final Transaction newTransaction = Transaction(
-      id: Random().nextDouble(),
-      title: titleController.text,
-      value: valueController.numberValue,
-      date: selectedDate
+    final Expenses newTransaction = Expenses(
+      Random().nextInt(100),
+      titleController.text,
+      valueController.numberValue,
+      selectedDate
     );
     
     transactions.add(newTransaction);
@@ -61,7 +61,7 @@ class DespesasController{
     updateDateForm.sink.add(selectedDate);
   }
 
-   void removeTransaction(double id, BuildContext context){
+   void removeTransaction(int id, BuildContext context){
     showDialog(
       context: context, 
       builder: (BuildContext context) => SimpleDialog(
@@ -93,10 +93,10 @@ class DespesasController{
   }
   
   double accumulateDateValues(int day){
-    List<Transaction> dayTransactions = transactions.where((element) => element.date.day == day).toList();
+    List<Expenses> dayTransactions = transactions.where((element) => element.date!.day == day).toList();
 
     if(dayTransactions.isNotEmpty){
-      accumulate = dayTransactions.map((transactions) =>  transactions.value).reduce((value, element) => value + element);
+      accumulate = dayTransactions.map((transactions) =>  transactions.value).reduce((value, element) => value! + element!)!;
       return accumulate;
     }
     return 0.0;

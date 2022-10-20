@@ -1,11 +1,10 @@
-import 'package:despesas_pessoais/components/chart.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/despesas_page.dart';
-import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_page.dart';
+import 'package:despesas_pessoais/repository/expenses_helper.dart';
+import 'package:despesas_pessoais/repository/expenses_helper.dart';
+import 'package:despesas_pessoais/repository/expenses_helper.dart';
+import 'package:despesas_pessoais/repository/expenses_helper.dart';
+import 'package:despesas_pessoais/ui/tela_despesas/expenses_page.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-import './components/transaction_form.dart';
-import './components/transaction_list.dart';
-import 'model/transaction.dart';
+import 'model/expenses.dart';
  
 main() => runApp(ExpensesApp());
  
@@ -42,29 +41,29 @@ class ExpensesApp extends StatelessWidget {
 }
  
 class MyHomePage extends StatefulWidget {
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
+  
 }
- 
+
 class _MyHomePageState extends State<MyHomePage> {
-  List<Transaction> transactions = [];
+  
+  ExpensesHelper expensesHelper = ExpensesHelper();
 
-  List<Transaction> get recentTransactions{
-    return transactions.where(
-      (element){
-        return element.date.isAfter(DateTime.now().subtract(
-        const Duration(days: 7)
-      ));
-     }
-    ).toList();
+  @override
+  void initState() {
+    Expenses expenses = Expenses();
+    expenses.value = 500000;
+    expenses.title = "CARRO";
+
+    expensesHelper.saveExpense(expenses);
+    expensesHelper.getAllExpenses().then((value) => print(value));
+    super.initState();
   }
- 
-
- 
+  
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: DespesasPage()
-    );
+    return ExpensesPage();
   }
 }

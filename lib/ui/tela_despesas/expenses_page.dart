@@ -1,33 +1,31 @@
-import 'dart:math';
-import 'package:despesas_pessoais/model/transaction.dart';
-import 'package:despesas_pessoais/ui/tela_despesas/despesas_controller.dart';
-import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_controller.dart';
-import 'package:despesas_pessoais/ui/tela_gr%C3%A1fico/grafico_page.dart';
+import 'package:despesas_pessoais/model/expenses.dart';
+import 'package:despesas_pessoais/ui/tela_despesas/expenses_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-class DespesasPage extends StatelessWidget {
-  DespesasPage({super.key});
+class ExpensesPage extends StatelessWidget {
+  ExpensesPage({super.key});
 
-  final DespesasController telaDespesasController = DespesasController();
+  final ExpensesController telaDespesasController = ExpensesController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Despesas Pessoais')),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
-        child: Column(
-          children: [
-            barChart(),
-            buildListTransactions(context),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Despesas Pessoais')),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
+          child: Column(
+            children: [
+              // barChart(),
+              buildListTransactions(context),
+            ],
+          ),
         ),
+        floatingActionButton: adicionarDespesa(context),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       ),
-      floatingActionButton: adicionarDespesa(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
   
@@ -130,7 +128,7 @@ class DespesasPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          StreamBuilder<List<Transaction>>(
+          StreamBuilder<List<Expenses>>(
             stream: telaDespesasController.updateTransactionsList.stream,
             builder: (context, snapshot) {
               return SizedBox(
@@ -160,13 +158,13 @@ class DespesasPage extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             child: FittedBox(child: Text('${snapshot.data![index].value}')),
                           ),
-                          title: Text(snapshot.data![index].title, style: Theme.of(context).textTheme.headline6),
-                          subtitle: Text(DateFormat('d MMM y').format(snapshot.data![index].date)),
+                          title: Text(snapshot.data![index].title!, style: Theme.of(context).textTheme.headline6),
+                          subtitle: Text(DateFormat('d MMM y').format(snapshot.data![index].date!)),
                           trailing: IconButton(
                             color: Theme.of(context).errorColor,
                             icon: const Icon(Icons.delete),
                             onPressed: (){
-                              telaDespesasController.removeTransaction(snapshot.data![index].id, context);
+                              telaDespesasController.removeTransaction(snapshot.data![index].id!, context);
                             }
                           ),
                         ),
