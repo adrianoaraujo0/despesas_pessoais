@@ -3,20 +3,19 @@ import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
-import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 import '../../model/expenses.dart';
 
-class ExpensesController{
-  final List<Expenses> transactions = [];
+class DashboardController{
+  List<Expenses> listExpenses = [];
   DateTime selectedDate = DateTime.now();
 
   final MoneyMaskedTextController valueController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
   final TextEditingController titleController = TextEditingController();
 
-  final BehaviorSubject<List<Expenses>> updateTransactionsList = BehaviorSubject<List<Expenses>>();
+  final BehaviorSubject<List<Expenses>> updateExpensesList = BehaviorSubject<List<Expenses>>();
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
-  final BehaviorSubject<bool> updateChart = BehaviorSubject<bool>();
+  final BehaviorSubject<List<Expenses>>  updateChart = BehaviorSubject<List<Expenses>>();
   double accumulate = 0 ;
 
   ExpensesHelper expensesHelper = ExpensesHelper();
@@ -30,6 +29,12 @@ class ExpensesController{
     );
   }
 
+  Future getExpenses() async{
+    listExpenses = await expensesHelper.getAllExpenses(); 
+    updateExpensesList.sink.add(listExpenses.reversed.toList());
+    updateChart.sink.add(listExpenses);
+ }
+
   void addTransaction(BuildContext context) {
     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
@@ -40,14 +45,15 @@ class ExpensesController{
       selectedDate
     );
     
-    transactions.add(newExpense);
-    updateTransactionsList.sink.add(transactions);
+    listExpenses.add(newExpense);
     expensesHelper.saveExpense(newExpense);
 
     titleController.clear();
     valueController.updateValue(0);
     selectedDate = DateTime.now();
-    
+
+
+    getExpenses();
     Navigator.of(context).pop();
   }
 
@@ -81,9 +87,8 @@ class ExpensesController{
               const SizedBox(height: 10,),
               InkWell(
                 onTap: () {
-                  transactions.removeWhere((element) => element.id == id);
-                  updateTransactionsList.sink.add(transactions);
-                  updateChart.sink.add(true);
+                  expensesHelper.deleteExpenses(id);
+                  getExpenses();
                   Navigator.pop(context);
                 }, 
                 child: Container(width: 60, height: 40, alignment: Alignment.center, child: const Text("SIM", textAlign: TextAlign.center,))
@@ -96,7 +101,7 @@ class ExpensesController{
   }
   
   double accumulateDateValues(int day){
-    List<Expenses> dayTransactions = transactions.where((element) => element.date!.day == day).toList();
+    List<Expenses> dayTransactions = listExpenses.where((element) => element.date!.day == day).toList();
 
     if(dayTransactions.isNotEmpty){
       accumulate = dayTransactions.map((transactions) =>  transactions.value).reduce((value, element) => value! + element!)!;
@@ -146,5 +151,12 @@ class ExpensesController{
       ),
     ];  
   }
+
+  // double? transactionsTotalSum()=> listExpenses.map((expense) => expense.value ).reduce((value, element) => value! + element!);
+
+  Future<double?> transactionsTotalSum() async {
+    List<Expenses> list = await expensesHelper.getAllExpenses();
+    return list.map((expense) => expense.value).reduce((value, element) => value! + element!);
+  } 
 
 }

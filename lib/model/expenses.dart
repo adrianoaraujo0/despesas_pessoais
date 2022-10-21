@@ -8,19 +8,23 @@ class Expenses {
   
   Expenses([this.id, this.title, this.value, this.date]);
   Columns columns = Columns();
-
+ 
   Expenses.fromMap(Map map){
+    DateTime convertMillisecondsToDateTime = DateTime.fromMillisecondsSinceEpoch(map["dateColumn"] );
+    print(convertMillisecondsToDateTime);
+
     id = map["idColumn"];
     title = map["titleColumn"];
     value = map["valueColumn"];
-    date = map["dateColumn"];
+    date = convertMillisecondsToDateTime;
+
   }
 
   Map<String, dynamic> toMap(){
     Map<String, dynamic> map = {
       columns.titleColumn: title,
       columns.valueColumn: value,
-      columns.dateColumn: date!.millisecondsSinceEpoch
+      columns.dateColumn: date
     };
     if(id != null){
       map[columns.idColumn] = id;

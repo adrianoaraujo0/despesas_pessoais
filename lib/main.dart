@@ -2,12 +2,11 @@ import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
-import 'package:despesas_pessoais/ui/screen_expenses/expenses_page.dart';
+import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'model/expenses.dart';
  
 main() async{
-
   WidgetsFlutterBinding.ensureInitialized();
   await ExpensesHelper().db;
   runApp(ExpensesApp());
@@ -22,7 +21,7 @@ class ExpensesApp extends StatelessWidget {
       home: MyHomePage(),
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
-          primary: Colors.purple,
+          primary: Colors.green,
           secondary: Colors.black,
         ),
         textTheme: tema.textTheme.copyWith(
@@ -59,12 +58,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     
     expensesHelper.getAllExpenses().then((value) => print(value));
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ExpensesPage();
+    return DashboardPage();
   }
 }
