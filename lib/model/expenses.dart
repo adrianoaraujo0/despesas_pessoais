@@ -6,7 +6,7 @@ class Expense {
   double? value;
   DateTime? date;
   
-  Expense([this.id, this.title, this.value, this.date]);
+  Expense({this.id, this.title, this.value, this.date});
   Columns columns = Columns();
  
   Expense.fromMap(Map map){

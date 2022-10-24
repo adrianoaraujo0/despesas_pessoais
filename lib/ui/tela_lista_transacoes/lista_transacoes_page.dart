@@ -1,4 +1,5 @@
 import 'package:despesas_pessoais/model/expenses.dart';
+import 'package:despesas_pessoais/ui/screen_edit_expense/edit_expense_page.dart';
 import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +26,7 @@ class _ListaTransacoesState extends State<ListaTransacoes> {
   Widget build(BuildContext context) {
     return StreamBuilder<List<Expense>>(
       stream: dashboardController.updateExpensesList.stream,
+      initialData: [],
       builder: (context, snapshot) {
         if(snapshot.data == null || snapshot.data!.isEmpty){
           return const CircularProgressIndicator();
@@ -45,21 +47,27 @@ class _ListaTransacoesState extends State<ListaTransacoes> {
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: 11,
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2),
-                          child: CircleAvatar(),
-                        ),
-                        title: Text(snapshot.data![index].title!, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-                        trailing:  Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text('R\$ ${snapshot.data![index].value}', style: const TextStyle(fontWeight: FontWeight.w500)),
-                            Text('${snapshot.data![index].date!.day}/${snapshot.data![index].date!.month}', style: const TextStyle(fontWeight: FontWeight.w300)),
-                          ],
+                      return InkWell(
+                        onTap: () async{
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => EditExpensePage(expense: snapshot.data![index])));
+                          dashboardController.getExpenses();
+                        },
+                        child: ListTile(
+                          leading: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 2),
+                            child: CircleAvatar(),
+                          ),
+                          title: Text(snapshot.data![index].title!, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
+                          trailing:  Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('R\$ ${snapshot.data![index].value}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                              Text('${snapshot.data![index].date!.day}/${snapshot.data![index].date!.month}', style: const TextStyle(fontWeight: FontWeight.w300)),
+                            ],
+                          ),
                         ),
                       );
                     },

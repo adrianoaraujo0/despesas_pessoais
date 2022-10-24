@@ -44,10 +44,8 @@ class ExpensesHelper{
 
   Future<Expense> saveExpense(Expense expenses)async {
     Database dbExpenses = await db;
-    List<Expense> allExpenses = await getAllExpenses();
    
     expenses.id = await dbExpenses.insert(expensesTable, expenses.toMap());
-    allExpenses.any((expense) => expense.id == expenses.id);
     return expenses;
   }
 
@@ -76,7 +74,6 @@ class ExpensesHelper{
 
   Future<int> updateExpenses(Expense expense) async{
     Database dbExpenses = await db;
-    
     return await dbExpenses.update(
       expensesTable,
       expense.toMap(),

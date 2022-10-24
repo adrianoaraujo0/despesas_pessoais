@@ -46,10 +46,9 @@ class DashboardController{
     if(valueController.text.isEmpty || titleController.text.isEmpty)return;
 
     final Expense newExpense = Expense(
-      Random().nextInt(100),
-      titleController.text,
-      valueController.numberValue,
-      selectedDate
+      title: titleController.text,
+      value: valueController.numberValue,
+      date: selectedDate
     );
     
     listExpenses.add(newExpense);
@@ -65,8 +64,7 @@ class DashboardController{
   }
 
   void editExpense(Expense expense) async{
-    expensesHelper.updateExpenses(expenses);
-    getExpenses();
+    expensesHelper.updateExpenses(expense);
   }
 
   void buildShowDatePicker(BuildContext context) async{

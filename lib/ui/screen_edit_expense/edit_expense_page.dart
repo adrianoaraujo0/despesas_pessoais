@@ -52,6 +52,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
               decoration: const InputDecoration(
                 labelText: "Valor:"
               ),
+              keyboardType: const TextInputType.numberWithOptions(),
             ),
             SizedBox(
               height: 60,
@@ -76,7 +77,14 @@ class _EditExpensePageState extends State<EditExpensePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>  dashboardController.editExpense(widget.expense),
+        onPressed: () {
+          widget.expense.title = dashboardController.titleController.text;
+          widget.expense.value = dashboardController.valueController.numberValue;
+          widget.expense.date = dashboardController.selectedDate;
+          dashboardController.editExpense(widget.expense);
+          
+          Navigator.pop(context);
+        },
         backgroundColor: Colors.green,
         child: const Icon(Icons.edit),
         ),

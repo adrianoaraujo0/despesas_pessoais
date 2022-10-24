@@ -1,3 +1,4 @@
+import 'package:despesas_pessoais/main.dart';
 import 'package:despesas_pessoais/model/expenses.dart';
 import 'package:despesas_pessoais/ui/screen_edit_expense/edit_expense_page.dart';
 import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_controller.dart';
@@ -5,6 +6,7 @@ import 'package:despesas_pessoais/ui/tela_lista_transacoes/lista_transacoes_page
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 
 class DashboardPage extends StatefulWidget {
   DashboardPage({required this.spendingLimit ,super.key});
@@ -20,7 +22,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void initState() {
-    
     dashboardController.getExpenses();
     super.initState();
   }
@@ -29,7 +30,10 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Despesas Pessoais')),
+      appBar:
+        AppBar(
+          title: const Text('Despesas Pessoais'),          
+        ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
@@ -76,7 +80,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     BarChartData(
                       backgroundColor: Colors.white,
                       minY: 0,
-                      maxY: widget.spendingLimit,
+                      maxY: 10000,
                       barGroups: dashboardController.chartGroup(),
                       borderData:  FlBorderData(
                       show: true,
@@ -113,7 +117,7 @@ class _DashboardPageState extends State<DashboardPage> {
         children: const [
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-            child: Text("Despesas mensal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
+            child: Text("Despesa mensal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
           ),
         ]
       ),

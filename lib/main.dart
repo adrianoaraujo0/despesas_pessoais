@@ -64,6 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return DashboardPage(spendingLimit: 1000,);
+    return DashboardPage(spendingLimit: 1000);
   }
 }
