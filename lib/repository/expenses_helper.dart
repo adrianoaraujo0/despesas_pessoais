@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 String expensesTable = "expensesTable";
-Expenses expenses = Expenses();
+Expense expenses = Expense();
 
 class ExpensesHelper{ 
   
@@ -35,29 +35,32 @@ class ExpensesHelper{
       version: 1,
       onCreate: ((db, version)async {
         await db.execute(
-          "CREATE TABLE $expensesTable(${columns.idColumn} INTERGER PRIMARY KEY, ${columns.titleColumn} TEXT,"
+          "CREATE TABLE $expensesTable(${columns.idColumn} INTEGER PRIMARY KEY AUTOINCREMENT, ${columns.titleColumn} TEXT,"
           "${columns.valueColumn} REAL, ${columns.dateColumn} INT)"
         );
       })
     );
   }
 
-  Future<Expenses> saveExpense(Expenses expenses)async {
+  Future<Expense> saveExpense(Expense expenses)async {
     Database dbExpenses = await db;
+    List<Expense> allExpenses = await getAllExpenses();
+   
     expenses.id = await dbExpenses.insert(expensesTable, expenses.toMap());
+    allExpenses.any((expense) => expense.id == expenses.id);
     return expenses;
   }
 
-  Future<Expenses> getExpenses(int id) async{
+  Future<Expense> getExpenses(int id) async{
     Database dbExpenses = await db;
     List<Map> maps = await dbExpenses.query(
       expensesTable,
-      columns: ["${columns.idColumn}", "${columns.titleColumn}", "${columns.valueColumn}", "${columns.dateColumn}"],
+      columns: [columns.idColumn, columns.titleColumn, columns.valueColumn, columns.dateColumn],
       where: "${columns.idColumn} = ?",
       whereArgs: [id]
     );
     
-     return Expenses.fromMap(maps.first);
+     return Expense.fromMap(maps.first);
     // if(maps.isNotEmpty){
     //   return Expenses.fromMap(maps.first);
     // }else{
@@ -71,24 +74,24 @@ class ExpensesHelper{
     return await dbExpenses.delete(expensesTable, where: "${columns.idColumn} = ?", whereArgs: [id]);
   }
 
-  Future<int> updateExpenses(Expenses expenses) async{
+  Future<int> updateExpenses(Expense expense) async{
     Database dbExpenses = await db;
     
     return await dbExpenses.update(
       expensesTable,
-      expenses.toMap(),
+      expense.toMap(),
       where: "${columns.idColumn} = ?",
-      whereArgs: [expenses.id]
+      whereArgs: [expense.id]
     );
   }
 
-  Future<List<Expenses>> getAllExpenses() async{
+  Future<List<Expense>> getAllExpenses() async{
     Database dbExpenses = await db;
     List listMap = await dbExpenses.rawQuery("SELECT *FROM $expensesTable");
-    List<Expenses> listExpenses = [];
+    List<Expense> listExpenses = [];
 
     for(Map m in listMap){
-      listExpenses.add(Expenses.fromMap(m));
+      listExpenses.add(Expense.fromMap(m));
     }
     return listExpenses;
   }

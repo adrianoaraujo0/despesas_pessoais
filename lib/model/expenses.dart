@@ -1,30 +1,28 @@
 import 'package:despesas_pessoais/repository/columns.dart';
 
-class Expenses {
+class Expense {
   int? id;
   String? title;
   double? value;
   DateTime? date;
   
-  Expenses([this.id, this.title, this.value, this.date]);
+  Expense([this.id, this.title, this.value, this.date]);
   Columns columns = Columns();
  
-  Expenses.fromMap(Map map){
+  Expense.fromMap(Map map){
     DateTime convertMillisecondsToDateTime = DateTime.fromMillisecondsSinceEpoch(map["dateColumn"] );
-    print(convertMillisecondsToDateTime);
 
     id = map["idColumn"];
     title = map["titleColumn"];
     value = map["valueColumn"];
     date = convertMillisecondsToDateTime;
-
   }
 
   Map<String, dynamic> toMap(){
     Map<String, dynamic> map = {
       columns.titleColumn: title,
       columns.valueColumn: value,
-      columns.dateColumn: date
+      'dateColumn': date!.millisecondsSinceEpoch
     };
     if(id != null){
       map[columns.idColumn] = id;

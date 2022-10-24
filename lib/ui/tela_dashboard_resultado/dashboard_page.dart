@@ -1,5 +1,5 @@
 import 'package:despesas_pessoais/model/expenses.dart';
-import 'package:despesas_pessoais/repository/expenses_helper.dart';
+import 'package:despesas_pessoais/ui/screen_edit_expense/edit_expense_page.dart';
 import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_controller.dart';
 import 'package:despesas_pessoais/ui/tela_lista_transacoes/lista_transacoes_page.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DashboardPage extends StatefulWidget {
-  DashboardPage({super.key});
+  DashboardPage({required this.spendingLimit ,super.key});
+  double spendingLimit;
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -47,7 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget barChart(){
-    return StreamBuilder<List<Expenses>>(
+    return StreamBuilder<List<Expense>>(
       stream: dashboardController.updateChart.stream,
       builder: (context, snapshot) {
         return SizedBox(
@@ -66,21 +67,20 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Text("Gasto semanal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
                   child: Text("Total: "),
                 ),
                 AspectRatio(
                   aspectRatio: 2,
                   child: BarChart(
                     BarChartData(
-                      backgroundColor: Colors.greenAccent[100],
+                      backgroundColor: Colors.white,
                       minY: 0,
-                      maxY: 10,
-                      groupsSpace: 2,
+                      maxY: widget.spendingLimit,
                       barGroups: dashboardController.chartGroup(),
                       borderData:  FlBorderData(
-                        show: true,
-                      border: const Border(bottom: BorderSide())),
+                      show: true,
+                      border: const Border(bottom: BorderSide.none)),
                       gridData: FlGridData(show: false),
                       titlesData: FlTitlesData(
                         bottomTitles: AxisTitles(sideTitles: dashboardController.bottomTitles()),
@@ -119,7 +119,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     ),
   );
-
  }
 
   Widget adicionarDespesa(BuildContext context) {
@@ -170,7 +169,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               ElevatedButton(
                   onPressed: (){
-                    dashboardController.addTransaction(context);
+                    dashboardController.addExpense(context);
                   },
                   child: const Text("Nova transação", style: TextStyle(color: Colors.white))
               ),
@@ -181,12 +180,16 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+
+
+
   Widget buildListTransactions(BuildContext context){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StreamBuilder<List<Expenses>>(
+        StreamBuilder<List<Expense>>(
           stream: dashboardController.updateExpensesList.stream,
+          initialData: const [],
           builder: (context, snapshot) {
             return SizedBox(
               height: 336,
@@ -218,27 +221,36 @@ class _DashboardPageState extends State<DashboardPage> {
                         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
                         child: Text("Últimas despesas", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
                         ),
-                        IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => ListaTransacoes()));}, icon: const Icon(Icons.list)),
+                        IconButton(
+                          icon: const Icon(Icons.list),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ListaTransacoes()))
+                        ),
                       ],
                     ),
                     ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: 5,
+                        itemCount: snapshot.data!.length < 5 ? snapshot.data!.length : 5,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 2),
-                              child: CircleAvatar(),
-                            ),
-                            title: Text(snapshot.data![index].title!, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-                            trailing:  Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('R\$ ${snapshot.data![index].value}', style: const TextStyle(fontWeight: FontWeight.w500)),
-                                Text(DateFormat.Hm().format(snapshot.data![index].date!), style: const TextStyle(fontWeight: FontWeight.w300)),
-                              ],
+                          return InkWell(
+                            onTap: () async {
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) =>  EditExpensePage(expense: snapshot.data![index])));
+                              dashboardController.getExpenses();
+                            },
+                            child: ListTile(
+                              leading: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 2),
+                                child: CircleAvatar(),
+                              ),
+                              title: Text(snapshot.data![index].title!, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
+                              trailing:  Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('R\$ ${snapshot.data![index].value}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                                  Text('${snapshot.data![index].date!.day}/${snapshot.data![index].date!.month}', style: const TextStyle(fontWeight: FontWeight.w300)),
+                                ],
+                              ),
                             ),
                           );
                       },

@@ -11,7 +11,6 @@ class ListaTransacoes extends StatefulWidget {
 }
 
 class _ListaTransacoesState extends State<ListaTransacoes> {
-  var x;
 
     @override
   void initState() {   
@@ -24,10 +23,13 @@ class _ListaTransacoesState extends State<ListaTransacoes> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Expenses>>(
+    return StreamBuilder<List<Expense>>(
       stream: dashboardController.updateExpensesList.stream,
       builder: (context, snapshot) {
-        return Scaffold(
+        if(snapshot.data == null || snapshot.data!.isEmpty){
+          return const CircularProgressIndicator();
+        }else{
+           return Scaffold(
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
@@ -56,7 +58,7 @@ class _ListaTransacoesState extends State<ListaTransacoes> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text('R\$ ${snapshot.data![index].value}', style: const TextStyle(fontWeight: FontWeight.w500)),
-                            Text(DateFormat.Hm().format(snapshot.data![index].date!), style: const TextStyle(fontWeight: FontWeight.w300)),
+                            Text('${snapshot.data![index].date!.day}/${snapshot.data![index].date!.month}', style: const TextStyle(fontWeight: FontWeight.w300)),
                           ],
                         ),
                       );
@@ -67,6 +69,8 @@ class _ListaTransacoesState extends State<ListaTransacoes> {
             ),
           ),
         );
+        }
+       
       }
     );
   }

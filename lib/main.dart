@@ -18,6 +18,7 @@ class ExpensesApp extends StatelessWidget {
     final ThemeData tema = ThemeData();
  
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
@@ -63,6 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return DashboardPage();
+    return DashboardPage(spendingLimit: 1000,);
   }
 }
