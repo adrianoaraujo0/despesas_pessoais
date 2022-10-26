@@ -1,13 +1,16 @@
-import 'package:despesas_pessoais/main.dart';
+import 'package:despesas_pessoais/model/chart_expense.dart';
 import 'package:despesas_pessoais/model/expenses.dart';
+import 'package:despesas_pessoais/repository/columns.dart';
 import 'package:despesas_pessoais/ui/screen_edit_expense/edit_expense_page.dart';
 import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_controller.dart';
-import 'package:despesas_pessoais/ui/tela_lista_transacoes/lista_transacoes_page.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:despesas_pessoais/ui/tela_lista_transacoes/lista_transacoes_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
-
+// ignore: must_be_immutable
 class DashboardPage extends StatefulWidget {
   DashboardPage({required this.spendingLimit ,super.key});
   double spendingLimit;
@@ -26,13 +29,15 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
         AppBar(
-          title: const Text('Despesas Pessoais'),          
+          title: const Text('Despesas Pessoais'),
+          actions: [
+            buildPopupMenuButton()
+          ],     
         ),
       body: SingleChildScrollView(
         child: Padding(
@@ -40,20 +45,22 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             children: [
               barChart(),
-              buildListTransactions(context),
-              pieChart()
+              buildListLastExpenses(context),
+              lineChart()
             ],
           ),
         ),
       ),
-      floatingActionButton: adicionarDespesa(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: SpeedDial(
+        backgroundColor: Colors.green,
+        child: buildPopupMenuButton(),
+      ),
     );
   }
 
   Widget barChart(){
     return StreamBuilder<List<Expense>>(
-      stream: dashboardController.updateChart.stream,
+      stream: dashboardController.updateBarChart.stream,
       builder: (context, snapshot) {
         return SizedBox(
           height: 267,
@@ -70,9 +77,9 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
                   child: Text("Gasto semanal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                  child: Text("Total: "),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                  child: Text("Total: ${dashboardController.weeklyExpense()}"),
                 ),
                 AspectRatio(
                   aspectRatio: 2,
@@ -103,33 +110,59 @@ class _DashboardPageState extends State<DashboardPage> {
     );
  }
 
- Widget pieChart(){
-  return SizedBox(
-    height: 400,
-    width: 400,
-    child: Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10)
-      ),
-      elevation: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-            child: Text("Despesa mensal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
+ Widget lineChart(){
+  return StreamBuilder<List<ChartExpense>>(
+    stream: dashboardController.updateLineChart.stream,
+    builder: (context, snapshot) {
+      return SizedBox(
+        height: 400,
+        width: 400,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10)
           ),
-        ]
-      ),
-    ),
+          elevation: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:  [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                child: Text("Despesa mensal", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                child: Text("Total: ${dashboardController.monthlyExpense()}"),
+              ),
+              SfCartesianChart(
+                primaryXAxis: CategoryAxis(),
+               legend: Legend(isVisible: true, position: LegendPosition.bottom),
+                tooltipBehavior: TooltipBehavior(enable: true),
+                series: <ChartSeries<ChartExpense, String>>[
+                  LineSeries<ChartExpense, String>(
+                    dataSource: dashboardController.listChart(),
+                    yValueMapper: (ChartExpense chartExpense, _) => chartExpense.expenseMonth,
+                    xValueMapper: (ChartExpense chartExpense, _) => chartExpense.month,
+                    // Enable data label
+                    dataLabelSettings: const DataLabelSettings(isVisible: true)
+                  )
+                ]
+              )
+            ]
+          ),
+        ),
+      );
+    }
   );
  }
+
+  
 
   Widget adicionarDespesa(BuildContext context) {
     return Container(     
       margin: const EdgeInsets.only(bottom: 20),
       child: FloatingActionButton(
-        onPressed: () => showModalBottomSheet(context: context, builder: (_) => buildForm(context)),
+        // onPressed: () => showModalBottomSheet(context: context, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)) ,builder: (_) => buildForm(context)),
+        onPressed: buildPopupMenuButton,
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),
       )
@@ -184,10 +217,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-
-
-
-  Widget buildListTransactions(BuildContext context){
+  Widget buildListLastExpenses(BuildContext context){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -227,7 +257,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.list),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ListaTransacoes()))
+                          onPressed: () async{
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => ListaTransacoes()));
+                            dashboardController.getExpenses();
+                          }
                         ),
                       ],
                     ),
@@ -268,4 +301,56 @@ class _DashboardPageState extends State<DashboardPage> {
       ],
     );
   }
+
+  Widget buildPopupMenuButton(){
+    return PopupMenuButton(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      icon: const Icon(Icons.add),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Row(
+            children: [
+              const Icon(Icons.monetization_on, color: Colors.green,),
+              TextButton(
+                child: const Text("Limites", style: TextStyle(color: Colors.black)),
+                onPressed: () {showModalBottomSheet(context: context, builder: (_) => setLimits());},
+              ),
+            ],
+          )
+        ),
+       
+        PopupMenuItem(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Row(
+            children: [
+              Icon(Icons.remove_circle, color: Colors.red,),
+              TextButton(
+                child: const Text("Despesa", style: TextStyle(color: Colors.black)),
+                onPressed: () {showModalBottomSheet(context: context, builder: (_) => setLimits());},
+              ),
+            ],
+          )
+        )
+      ],
+    );
+  }
+
+  Widget setLimits(){
+    return Card(
+      child: Column(
+        children: [
+          TextField(decoration: InputDecoration(hintText: 'Limite da despesa diaria')),
+          TextField(decoration: InputDecoration(hintText: 'Limite da despesa semanal')),
+          TextField(decoration: InputDecoration(hintText: 'Limite da despesa mensal')),
+      ])
+    );
+  }
+}
+
+class Teste {
+  Teste(this.year, this.victims);
+  
+  final String year;
+  final double victims;
 }

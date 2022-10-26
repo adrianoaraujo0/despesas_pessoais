@@ -17,8 +17,6 @@ class _EditExpensePageState extends State<EditExpensePage> {
 
   @override
   void initState() {
- 
-
     dashboardController.titleController.text = widget.expense.title!;
     dashboardController.valueController.text = widget.expense.value!.toStringAsFixed(2).toString();
     dashboardController.selectedDate = widget.expense.date!;
@@ -32,8 +30,15 @@ class _EditExpensePageState extends State<EditExpensePage> {
         title: Text("${widget.expense.title}"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => dashboardController.removeTransaction(widget.expense.id!, context)         
+            icon: const Icon(Icons.check),
+            onPressed: () {
+               widget.expense.title = dashboardController.titleController.text;
+               widget.expense.value = dashboardController.valueController.numberValue;
+               widget.expense.date = dashboardController.selectedDate;
+               dashboardController.editExpense(widget.expense);
+          
+              Navigator.pop(context);
+            }         
           )
         ],
       ),
@@ -57,7 +62,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
             SizedBox(
               height: 60,
               child: StreamBuilder<DateTime>(
-              initialData: DateTime.now(),
+              initialData:  widget.expense.date,
               stream: dashboardController.updateDateForm.stream,
               builder: (context, snapshot) {
                 return Row(
@@ -76,18 +81,20 @@ class _EditExpensePageState extends State<EditExpensePage> {
           ]
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          widget.expense.title = dashboardController.titleController.text;
-          widget.expense.value = dashboardController.valueController.numberValue;
-          widget.expense.date = dashboardController.selectedDate;
-          dashboardController.editExpense(widget.expense);
-          
-          Navigator.pop(context);
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.edit),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            minimumSize: const Size(double.maxFinite, 50)
+          ),
+          child: const Text('Excluir despesa'),
+          onPressed: () {
+            dashboardController.removeExpense(widget.expense.id!, context); 
+          },
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

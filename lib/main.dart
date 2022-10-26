@@ -57,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ExpensesHelper expensesHelper = ExpensesHelper();
   @override
   void initState() {
-    
     expensesHelper.getAllExpenses().then((value) => print(value));
     super.initState();
   }

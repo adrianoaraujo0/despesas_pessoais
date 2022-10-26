@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:despesas_pessoais/model/chart_expense.dart';
 import 'package:despesas_pessoais/repository/expenses_helper.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,9 @@ class DashboardController{
 
   final BehaviorSubject<List<Expense>> updateExpensesList = BehaviorSubject<List<Expense>>();
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
-  final BehaviorSubject<List<Expense>>  updateChart = BehaviorSubject<List<Expense>>();
+  final BehaviorSubject<List<Expense>>  updateBarChart = BehaviorSubject<List<Expense>>();
+  final BehaviorSubject<List<ChartExpense>>  updateLineChart = BehaviorSubject<List<ChartExpense>>();
+  
   double accumulate = 0 ;
 
   ExpensesHelper expensesHelper = ExpensesHelper();
@@ -32,8 +35,8 @@ class DashboardController{
   void getExpenses() async{
     listExpenses = await expensesHelper.getAllExpenses(); 
     updateExpensesList.sink.add(listExpenses.reversed.toList());
-    updateChart.sink.add(listExpenses);
-  
+    updateBarChart.sink.add(listExpenses);
+    updateLineChart.sink.add(listChart());
  }
 
   Future<List<Expense>> getAllExpenses() async{
@@ -59,7 +62,8 @@ class DashboardController{
     selectedDate = DateTime.now();
 
     updateExpensesList.sink.add(listExpenses);
-    updateChart.sink.add(listExpenses);
+    updateBarChart.sink.add(listExpenses);
+    updateLineChart.sink.add(listChart());
     Navigator.of(context).pop();
   }
 
@@ -79,7 +83,7 @@ class DashboardController{
     updateDateForm.sink.add(selectedDate);
   }
 
-   void removeTransaction(int id, BuildContext context){
+   void removeExpense(int id, BuildContext context){
     showDialog(
       context: context, 
       builder: (BuildContext context) => SimpleDialog(
@@ -165,4 +169,28 @@ class DashboardController{
 
   double? transactionsTotalSum()=> listExpenses.map((expense) => expense.value ).reduce((value, element) => value! + element!);
 
+  double? weeklyExpense() {
+    List<Expense> week = listExpenses.where((expense) => expense.date!.day > selectedDate.day - 7).toList();
+    return week.isNotEmpty ?  week.map((expense) => expense.value).reduce((value, element) => value! + element!) : 0;
+  }
+  
+  double? monthlyExpense() {
+    List<Expense> month = listExpenses.where((expense) => expense.date!.day > selectedDate.day - 30).toList();
+    return month.isNotEmpty ? month.map((expense) => expense.value).reduce((value, element) => value! + element!) : 0;
+  }
+  
+  double expensePerMonth(int month) {
+    List<Expense> monthList = listExpenses.where((expense) => expense.date!.month == month).toList();
+    return monthList.isNotEmpty ? monthList.map((expense) => expense.value).reduce((value, element) => value! + element!)! : 0;
+  }
+
+  List<ChartExpense> listChart(){
+    List<String> months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    List<ChartExpense> list = [];
+
+    for(int i = 0; i<=11; i++){
+      list.add(ChartExpense(month: months[i] , expenseMonth: expensePerMonth(i + 1)));
+    }
+    return list;
+  } 
 }
