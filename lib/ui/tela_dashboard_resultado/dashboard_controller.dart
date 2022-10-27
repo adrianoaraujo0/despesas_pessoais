@@ -14,10 +14,16 @@ class DashboardController{
   final MoneyMaskedTextController valueController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
   final TextEditingController titleController = TextEditingController();
 
+  final MoneyMaskedTextController dailyLimitController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
+  final MoneyMaskedTextController weeklyLimitController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
+  final MoneyMaskedTextController monthlyLimitController = MoneyMaskedTextController(precision: 2, leftSymbol: 'R\$ ');
+
   final BehaviorSubject<List<Expense>> updateExpensesList = BehaviorSubject<List<Expense>>();
   final BehaviorSubject<DateTime> updateDateForm = BehaviorSubject<DateTime>();
   final BehaviorSubject<List<Expense>>  updateBarChart = BehaviorSubject<List<Expense>>();
   final BehaviorSubject<List<ChartExpense>>  updateLineChart = BehaviorSubject<List<ChartExpense>>();
+  final BehaviorSubject<bool>  updateFAB = BehaviorSubject<bool>();
+  
   
   double accumulate = 0 ;
 

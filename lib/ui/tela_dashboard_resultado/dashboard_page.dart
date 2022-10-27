@@ -1,6 +1,5 @@
 import 'package:despesas_pessoais/model/chart_expense.dart';
 import 'package:despesas_pessoais/model/expenses.dart';
-import 'package:despesas_pessoais/repository/columns.dart';
 import 'package:despesas_pessoais/ui/screen_edit_expense/edit_expense_page.dart';
 import 'package:despesas_pessoais/ui/tela_dashboard_resultado/dashboard_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -35,9 +34,6 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar:
         AppBar(
           title: const Text('Despesas Pessoais'),
-          actions: [
-            buildPopupMenuButton()
-          ],     
         ),
       body: SingleChildScrollView(
         child: Padding(
@@ -110,6 +106,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
  }
 
+
+
  Widget lineChart(){
   return StreamBuilder<List<ChartExpense>>(
     stream: dashboardController.updateLineChart.stream,
@@ -135,7 +133,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               SfCartesianChart(
                 primaryXAxis: CategoryAxis(),
-               legend: Legend(isVisible: true, position: LegendPosition.bottom),
+                legend: Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: TooltipBehavior(enable: true),
                 series: <ChartSeries<ChartExpense, String>>[
                   LineSeries<ChartExpense, String>(
@@ -154,20 +152,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   );
  }
-
-  
-
-  Widget adicionarDespesa(BuildContext context) {
-    return Container(     
-      margin: const EdgeInsets.only(bottom: 20),
-      child: FloatingActionButton(
-        // onPressed: () => showModalBottomSheet(context: context, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)) ,builder: (_) => buildForm(context)),
-        onPressed: buildPopupMenuButton,
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-      )
-    );
-  }
 
   Widget buildForm(BuildContext context){
     return Card(
@@ -314,20 +298,25 @@ class _DashboardPageState extends State<DashboardPage> {
               const Icon(Icons.monetization_on, color: Colors.green,),
               TextButton(
                 child: const Text("Limites", style: TextStyle(color: Colors.black)),
-                onPressed: () {showModalBottomSheet(context: context, builder: (_) => setLimits());},
+                onPressed: () {
+                  Navigator.pop(context);
+                  showModalBottomSheet(context: context, builder: (_) => setLimits());
+                },
               ),
             ],
           )
         ),
-       
         PopupMenuItem(
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Row(
             children: [
-              Icon(Icons.remove_circle, color: Colors.red,),
+              const Icon(Icons.remove_circle, color: Colors.red,),
               TextButton(
                 child: const Text("Despesa", style: TextStyle(color: Colors.black)),
-                onPressed: () {showModalBottomSheet(context: context, builder: (_) => setLimits());},
+               onPressed: () {
+                 Navigator.pop(context);
+                 showModalBottomSheet(context: context, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)) ,builder: (_) => buildForm(context));
+               },
               ),
             ],
           )
@@ -340,10 +329,30 @@ class _DashboardPageState extends State<DashboardPage> {
     return Card(
       child: Column(
         children: [
-          TextField(decoration: InputDecoration(hintText: 'Limite da despesa diaria')),
-          TextField(decoration: InputDecoration(hintText: 'Limite da despesa semanal')),
-          TextField(decoration: InputDecoration(hintText: 'Limite da despesa mensal')),
-      ])
+          TextField(
+            decoration: const InputDecoration(hintText: 'Limite da despesa diaria'),
+            controller: dashboardController.dailyLimitController,
+          ),
+          TextField(
+            decoration: const InputDecoration(hintText: 'Limite da despesa semanal'),
+            controller: dashboardController.weeklyLimitController,
+          ),
+          TextField(
+            decoration: const InputDecoration(hintText: 'Limite da despesa mensal'),
+            controller: dashboardController.monthlyLimitController,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(onPressed: (() {}), child: const Text("Definir limites")),
+              ),
+            ],
+          )
+       ]
+      )
     );
   }
 }
